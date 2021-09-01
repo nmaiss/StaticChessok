@@ -1,0 +1,69 @@
+<html>
+<head>
+    <link rel="stylesheet" href="chessboard-1.0.0.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="chess.js"></script>
+    <script src="chessboard-1.0.0.js"></script>
+</head>
+<body>
+    <h1>Règles</h1>
+    <p>Il s'agit d'une variante du jeu d'échecs intégrant une nouvelle règle : chaque pièce est composée d'un certain nombre de rondelles (qu'on assimile à des points) qu'elle peut transférer à son voisin (situé à une strictement une case d'elle) et ainsi faire une transformation.</p>
+    </b>
+    <p>L'hiérarchie du jeu est la suivante : pion (un point), cavalier (deux points), fou (trois points), tour (quatre points), dame (сinq points). Le roi reste intouchable.</p>
+    </b>
+    <p>Un exemple:</b>
+    Un cavalier situé à côté d'une tour peut lui transférer un point (le joueur déplace la rondelle d'une pièce sur l'autre) et ainsi la tour devient la dame et le cavalier un pion.</p>
+    <div id="board" style="width: 700px; top:200; bottom: 0; left: 0; right: 0; margin: auto;">
+    </div>
+    <script>
+
+        var board, game = new Chess();
+
+        var onDragStart = function (source, piece) {
+            if (game.game_over() === true ||
+              (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+              (game.turn() === 'b' && piece.search(/^w/) !== -1))
+              {
+                return false;
+              }
+        };
+
+        var onDrop = function (source, target) {
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q'
+            });
+            if (move === null) return 'snapback';
+        };
+
+        var onMouseoverSquare = function (square, piece) {
+            var moves = game.moves({
+                square: square,
+                verbose: true
+            });
+            if (moves.length === 0) return;
+        };
+
+        var onSnapEnd = function () {
+            board.position(game.fen());
+        
+        };
+
+        var init = function() {
+            var cfg = {
+              pieceTheme: 'wikipedia/{piece}.png',
+              position: 'start',
+              draggable: true,
+              onDragStart: onDragStart,
+              onDrop: onDrop,
+              onMouseoverSquare: onMouseoverSquare,
+              onSnapEnd: onSnapEnd,
+              orientation: 'white',
+            };
+            board = new ChessBoard('board', cfg);
+        };
+        jQuery(document).ready(init);
+    </script>
+</body>
+</html>
